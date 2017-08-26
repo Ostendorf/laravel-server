@@ -1,0 +1,18 @@
+---
+user_name: "forge"
+user_group: "forge"
+
+php_repo: "ppa:ondrej/php"
+php_version: "php7.1"
+php_config_path: "/etc/php/7.1/fpm"
+php_run_path: "/usr/bin/php"
+
+mariadb_repo: "deb [arch=amd64,i386,ppc64el] http://ams2.mirrors.digitalocean.com/mariadb/repo/10.2/ubuntu xenial main"
+mariadb_keyserver: "hkp://keyserver.ubuntu.com:80"
+mariadb_id: "0xF1656F24C74CD1D8"
+
+composer_path: /usr/local/bin/composer
+composer_vendor_path: /home/{{ user_name }}/.composer/vendor/bin
+
+yarn_repo: "deb https://dl.yarnpkg.com/debian/ stable main"
+yarn_key_url: "https://dl.yarnpkg.com/debian/pubkey.gpg"
