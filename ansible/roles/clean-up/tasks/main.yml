@@ -1,0 +1,7 @@
+---
+# Keep system clean
+- name: Autoremove unused packages
+  command: apt-get -y autoremove
+
+- name: Autoclean old downloaded archive files
+  command: apt-get -y autoclean

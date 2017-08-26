@@ -1,0 +1,55 @@
+---
+- name: Create group "{{ user_group }}"
+  group:
+    name: "{{ user_group }}"
+    state: present
+    system: yes
+
+- name: Create user "{{ user_name }}"
+  user:
+    name: "{{ user_name }}"
+    group: "{{ user_group }}"
+    groups: "sudo"
+    generate_ssh_key: yes
+    home: "/home/{{ user_name }}/"
+    password: "{{ user_password }}"
+    ssh_key_bits: 4096
+    state: present
+
+- name: Copy bash_aliases
+  template:
+    src: .bash_aliases.j2
+    dest: "/home/{{ user_name }}/.bash_aliases"
+    owner: "{{ user_name }}"
+    group: "{{ user_name }}"
+    mode: 0644
+
+- name: Copy locale
+  template:
+    src: locale.j2
+    dest: /etc/default/locale
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Set authorized key for "{{ user_name }}" copying from current user
+  authorized_key:
+    user: "{{ user_name }}"
+    state: present
+    key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_rsa.pub') }}"
+
+- name: Disable SSH access for root user
+  lineinfile:
+      dest: /etc/ssh/sshd_config
+      state: present
+      regexp: "^PermitRootLogin"
+      line: "PermitRootLogin no"
+
+- name: Disable SSH access via passwords
+  lineinfile:
+      dest: /etc/ssh/sshd_config
+      state: present
+      regexp: "^PasswordAuthentication"
+      insertafter: "^#PasswordAuthentication"
+      line: "PasswordAuthentication no"
+  notify: Restart ssh

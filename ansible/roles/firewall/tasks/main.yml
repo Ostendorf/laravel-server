@@ -1,0 +1,40 @@
+---
+- name: Enable ufw
+  ufw:
+    state: enabled
+
+- name: Block all incoming
+  ufw:
+    state: enabled
+    policy: deny
+    direction: incoming
+
+- name: Allow all outgoing
+  ufw:
+    state: enabled
+    policy: allow
+    direction: outgoing
+
+- name: Allow SSH
+  ufw:
+    rule: allow
+    proto: tcp
+    port: 22
+
+- name: Rate limit SSH
+  ufw:
+    rule: limit
+    port: ssh
+    proto: tcp
+
+- name: Allow incoming http
+  ufw:
+    rule: allow
+    proto: tcp
+    port: 80
+
+- name: Allow incoming https
+  ufw:
+    rule: allow
+    proto: tcp
+    port: 443

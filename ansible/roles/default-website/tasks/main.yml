@@ -1,0 +1,32 @@
+---
+- name: Create default website directory
+  file:
+    path: "/home/{{ user_name }}/default"
+    state: directory
+    mode: 0755
+
+- name: Copy default index.php
+  template:
+    src: index.php.j2
+    dest: "/home/{{ user_name }}/default/index.php"
+    owner: "{{ user_name }}"
+    group: "{{ user_name }}"
+    mode: 0644
+
+- name: Copy default nginx website config
+  template:
+    src: default.j2
+    dest: "/etc/nginx/sites-available/default"
+    owner: "root"
+    group: "root"
+    mode: 0644
+
+- name: Restart PHP
+  service:
+    name: "{{ php_version }}-fpm"
+    state: restarted
+
+- name: Restart nginx
+  service:
+    name: nginx
+    state: restarted

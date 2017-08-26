@@ -1,0 +1,60 @@
+---
+- name: Install repository
+  apt_repository:
+    repo: "{{ mariadb_repo }}"
+    state: present
+
+- name: Add repository key to the system
+  apt_key:
+    keyserver: "{{ mariadb_keyserver }}"
+    id: "{{ mariadb_id }}"
+    state: present
+
+- name: Install MariaDB Server
+  apt:
+    name: "{{ item }}"
+    update_cache: yes
+    state: latest
+  with_items:
+    - python-mysqldb
+    - mariadb-server
+
+- name: Create MariaDB root password
+  command: /usr/bin/openssl rand -base64 32
+  register: mariadb_root_password
+
+- name: Set MariaDB root password
+  mysql_user:
+    name: root
+    host: "{{ item }}"
+    password: "{{ mariadb_root_password.stdout }}"
+    state: present
+  with_items:
+    - "{{ ansible_hostname }}"
+    - ::1
+    - 127.0.0.1
+    - localhost
+  notify: Restart mariadb
+
+- name: Copy root credentials
+  template:
+    src: my.cnf.j2
+    dest: ~/.my.cnf
+    owner: root
+    group: root
+    mode: 0600
+
+- name: Remove anonymous database users
+  mysql_user:
+    user: ""
+    host: "{{ item }}"
+    state: "absent"
+  with_items:
+    - "{{ ansible_hostname }}"
+    - "%"
+    - localhost
+
+- name: Remove test database
+  mysql_db:
+    db: test
+    state: absent

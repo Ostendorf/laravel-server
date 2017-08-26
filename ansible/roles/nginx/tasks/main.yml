@@ -1,0 +1,20 @@
+---
+- name: Install latest version
+  apt:
+    name: "{{ item }}"
+    update_cache: yes
+    state: latest
+  with_items:
+    - nginx
+
+- name: Enable and start on boot
+  service:
+    name: nginx
+    state: started
+    enabled: yes
+
+- name: Copy configuration
+  template:
+    src: nginx.conf.j2
+    dest: /etc/nginx/nginx.conf
+  notify: Restart nginx

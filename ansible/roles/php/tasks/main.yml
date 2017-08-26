@@ -1,0 +1,52 @@
+---
+- name: Add ppa repository
+  apt_repository:
+    repo: "{{ php_repo }}"
+
+- name: Install latest version
+  apt:
+    name: "{{ item }}"
+    update_cache: yes
+    state: latest
+  with_items:
+    - "{{ php_version }}-fpm"
+    - "{{ php_version }}-pdo"
+    - "{{ php_version }}-mysql"
+    - "{{ php_version }}-mbstring"
+    - "{{ php_version }}-xml"
+    - "{{ php_version }}-zip"
+
+- name: Change PHP user
+  lineinfile:
+      dest: "{{ php_config_path }}/pool.d/www.conf"
+      state: present
+      regexp: "^user ="
+      line: "user = {{ user_name }}"
+
+- name: Change PHP group
+  lineinfile:
+      dest: "{{ php_config_path }}/pool.d/www.conf"
+      state: present
+      regexp: "^group ="
+      line: "group = {{ user_name }}"
+
+- name: Change PHP listen owner
+  lineinfile:
+      dest: "{{ php_config_path }}/pool.d/www.conf"
+      state: present
+      regexp: "^listen.owner ="
+      line: "listen.owner = {{ user_name }}"
+
+- name: Change PHP listen group
+  lineinfile:
+      dest: "{{ php_config_path }}/pool.d/www.conf"
+      state: present
+      regexp: "^listen.group ="
+      line: "listen.group = {{ user_name }}"
+
+- name: Enable and start on boot
+  service:
+    name: "{{ php_version }}-fpm"
+    state: started
+    enabled: yes
+  notify: Restart php

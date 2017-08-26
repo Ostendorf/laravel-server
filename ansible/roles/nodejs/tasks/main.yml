@@ -1,0 +1,35 @@
+---
+- name: Install Yarn repository
+  apt_repository:
+    repo: "{{ yarn_repo }}"
+    state: present
+
+- name: Download Yarn repository key
+  get_url:
+    url: "{{ yarn_key_url }}"
+    dest: /tmp/yarn-pubkey.gpg
+
+- name: Add Yarn repository key to the system
+  apt_key:
+    file: /tmp/yarn-pubkey.gpg
+    state: present
+
+- name: Install NodeJS repo and NPM
+  raw: "curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -"
+
+- name: Install NodeJS and Yarn
+  apt:
+    name: "{{ item }}"
+    update_cache: yes
+    state: latest
+  with_items:
+    - nodejs
+    - yarn
+
+- name: Install Bower via NPM
+  npm:
+    name: "{{ item }}"
+    state: present
+    global: yes
+  with_items:
+    - bower

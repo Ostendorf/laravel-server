@@ -1,0 +1,46 @@
+---
+- name: Check if already installed
+  stat:
+    path: "{{ composer_path }}"
+  register: composer
+
+- name: Download setup
+  get_url:
+    url: https://getcomposer.org/installer
+    dest: /tmp/composer-setup.php
+  when: not composer.stat.exists
+
+- name: Install
+  command: "{{ php_run_path }} /tmp/composer-setup.php"
+  when: not composer.stat.exists
+
+- name: Remove setup
+  command: "{{ php_run_path }} -r \"unlink('/tmp/composer-setup.php');\""
+  when: not composer.stat.exists
+
+- name: Move for global access
+  command: "mv composer.phar {{ composer_path }}"
+  when: not composer.stat.exists
+
+- name: Update to latest version
+  command: "{{ php_run_path }} {{ composer_path }} self-update"
+  when: composer.stat.exists
+
+- name: Create "{{ composer_vendor_path }}"
+  file:
+    path: "{{ composer_vendor_path }}"
+    state: directory
+    mode: 0755
+  become_user: "{{ user_name }}"
+
+- name: Add "{{ composer_vendor_path }}" to PATH
+  lineinfile:
+    dest: ~/.profile
+    state: present
+    regexp: "{{ composer_vendor_path }}"
+    line: 'PATH="{{ composer_vendor_path }}:$PATH"'
+  become_user: "{{ user_name }}"
+
+- name: Install global Laravel Installer
+  command: 'composer global require "laravel/installer"'
+  become_user: "{{ user_name }}"
