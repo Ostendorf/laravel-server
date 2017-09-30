@@ -1,12 +1,10 @@
 #!/bin/bash
 
-RED='\033[0;31m' # Red color
-NC='\033[0m' # No color
+RED="\033[0;31m" # Red color
+NC="\033[0m" # No color
 
-clear
 echo
-echo "*** Run Laravel Server Ansible script ***"
-echo
+echo "*** Laravel Server Provisioning ***"
 
 if [[ $# -lt 1 ]]
 then
@@ -16,18 +14,16 @@ then
     exit
 fi
 
-printf "${RED}***${NC} Run on ${RED}"
 if [[ $1 == "vagrant" ]]
 then
-    printf "Vagrant"
+    echo "*** Run on local Vagrant server ***"
 elif [[ $1 == "live" ]]
 then
-    printf "LIVE server"
+    printf "${RED}*** Run on LIVE server ***${NC}\n"
 fi
-printf " ***${NC}\n"
 
-echo "Are you sure?"
 echo
+echo "Are you sure?"
 echo "(Press ENTER to proceed or CTRL+C to abort)"
 read dummy
 
@@ -36,5 +32,5 @@ then
     exec vagrant up --provision
 elif [[ $1 == "live" ]]
 then
-    exec echo 'not implemented yet'
+    exec ansible-playbook -i ./ansible/hosts ./ansible/server.yml --user=forge --ask-become-pass
 fi

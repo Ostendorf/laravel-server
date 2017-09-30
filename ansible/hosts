@@ -1,5 +1,2 @@
 [live]
-999.999.999.999
-
-[vagrant]
-192.168.10.25
+192.168.10.25  # change to your server IP-address
