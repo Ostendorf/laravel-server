@@ -47,7 +47,7 @@ Installation instructions for Vagrant and VPS setups.
 1. Run `bash ./run.sh live` and enter the sudo password of your forge user.
 
 ## Security Vulnerabilities
-If you discover any security related issues, please contact me directly (private) instead of using the issue tracker.
+If you discover any security related issues, please contact me directly (mail to `security` at `ostendorf.me`) instead of using the issue tracker.
 
 ## Contribute
 You're welcome to contribute and/or give feedback by sending pull requests or by creating issues.
